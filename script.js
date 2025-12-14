@@ -47,8 +47,8 @@ async function init() {
 
     const titles = Object.keys(data);
     if (titles.length) {
-      expanded.add(titles[0]);
-      selectPost(titles[0]);
+      expanded.add(document.cookie || titles[0]);
+      selectPost(document.cookie || titles[0]);
     }
     renderNav();
   } catch (err) {
@@ -108,6 +108,7 @@ function renderNav() {
 
 // Handle clicking on a post title
 function handlePostClick(title) {
+  document.cookie = title;
   if (expanded.has(title)) {
     expanded.delete(title);
   } else {
