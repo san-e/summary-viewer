@@ -11,6 +11,16 @@ const idsToNames = {
   2765061: "Mathematisches Arbeiten"
 }
 
+window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    },
+    startup: {
+        typeset: false   // we will call typeset manually
+    }
+};
+
 // Generate URL-safe ID from string
 const toId = (str) => str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
 
@@ -131,7 +141,7 @@ function selectPost(title) {
       ${sectionsHtml}
     </div>
   `;
-
+  MathJax.typesetPromise();
   renderNav();
 }
 
