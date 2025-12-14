@@ -1,4 +1,4 @@
-const GIST_URL = 'https://gist.github.com/san-e/7d60a4793305ee49b7ea6e05f07ff7f9';
+const GIST_URL = 'https://api.github.com/gists/7d60a4793305ee49b7ea6e05f07ff7f9';
 
 let data = null;
 let selected = null;
@@ -33,8 +33,7 @@ function base64ToBytes(base64) {
 // Initialize the app
 async function init() {
   try {
-    let call = get_db_gist(GIST_URL);
-    data = JSON.parse(get_db_gist(call));
+    data = JSON.parse(await get_db_gist(GIST_URL));
 
     const titles = Object.keys(data);
     if (titles.length) {
@@ -43,6 +42,7 @@ async function init() {
     }
     renderNav();
   } catch (err) {
+    console.log(err);
     document.getElementById('article').innerHTML = `
       <div class="error">
         <p>Error loading data</p>
