@@ -1,4 +1,4 @@
-const GIST_URL = 'https://gist.githubusercontent.com/san-e/7d60a4793305ee49b7ea6e05f07ff7f9/raw/summary_db.json';
+const GIST_URL = 'https://gist.github.com/san-e/7d60a4793305ee49b7ea6e05f07ff7f9';
 
 let data = null;
 let selected = null;
@@ -14,17 +14,27 @@ const idsToNames = {
 // Generate URL-safe ID from string
 const toId = (str) => str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
 
+async function get_db_gist() {
+    let response = await fetch(GIST_URL, {
+        headers: {
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+    });
+    let text = await response.json();
+    return new TextDecoder().decode(base64ToBytes(text["files"]["summary_db.json"]["content"]));
+}
+
+function base64ToBytes(base64) {
+  const binString = atob(base64);
+  return Uint8Array.from(binString, (m) => m.codePointAt(0));
+}
+
 // Initialize the app
 async function init() {
   try {
-    const res = await fetch(GIST_URL);
-    if (!res.ok) throw new Error('Failed to fetch data');
-
-    const text = await res.text();
-    
-    // Decode base64 with proper UTF-8 handling
-    const bytes = Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
-    data = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    let call = get_db_gist(GIST_URL);
+    data = JSON.parse(get_db_gist(call));
 
     const titles = Object.keys(data);
     if (titles.length) {
