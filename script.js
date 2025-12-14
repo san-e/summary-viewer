@@ -3,6 +3,13 @@ const GIST_URL = 'https://gist.githubusercontent.com/san-e/7d60a4793305ee49b7ea6
 let data = null;
 let selected = null;
 let expanded = new Set();
+const idsToNames = {
+  2657588: "Grundzüge digitaler Systeme",
+  2658050: "Einführung in die Programmierung 1",
+  2673357: "Algebra und diskrete Mathematik",
+  2761974: "Denkweisen der Informatik",
+  2765061: "Mathematisches Arbeiten"
+}
 
 // Generate URL-safe ID from string
 const toId = (str) => str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
@@ -57,7 +64,7 @@ function renderNav() {
               onclick="scrollToSection('${escapeQuotes(title)}', '${toId(sub)}')"
               title="${escapeHtml(sub)}"
             >
-              ${i + 1}. ${escapeHtml(sub.slice(0, 24))}...
+              ${i + 1}. ${escapeHtml(data[title][sub].split("\n")[0].replace("#", "") || sub.slice(0, 24))}
             </button>
           </li>
         `).join('')}
@@ -71,7 +78,7 @@ function renderNav() {
           onclick="handlePostClick('${escapeQuotes(title)}')"
         >
           ${chevron}
-          ${escapeHtml(title)}
+          ${escapeHtml(idsToNames[title])}
         </button>
         ${subsectionsHtml}
       </li>
@@ -84,6 +91,7 @@ function handlePostClick(title) {
   if (expanded.has(title)) {
     expanded.delete(title);
   } else {
+    expanded.clear();
     expanded.add(title);
   }
   selectPost(title);
@@ -102,13 +110,13 @@ function selectPost(title) {
 
   const sectionsHtml = entries.map(([key, content]) => `
     <div class="section" id="${toId(key)}">
-      <div class="prose">${marked.parse(content)}</div>
+      <div class="prose">${marked.parse(content).replace(/\{ts\}([\d:.]+)\{\/ts\}/g, "")}</div>
     </div>
   `).join('');
 
   document.getElementById('article').innerHTML = `
     <div class="fade-in">
-      <h2 class="post-title">${escapeHtml(title)}</h2>
+      <h2 class="post-title">${escapeHtml(idsToNames[title])}</h2>
       ${sectionCountHtml}
       ${sectionsHtml}
     </div>

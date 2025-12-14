@@ -1,7 +1,7 @@
 :root {
   /* === LAYOUT CONFIG - TWEAK THESE === */
   --sidebar-width: 280px;
-  --content-max-width: 720px;
+  --content-max-width: 100%; /*720px;*/
   --layout-gap: 3rem;
   /* =================================== */
 
