@@ -28,6 +28,14 @@ function constructOpencastURL(id, e) {
   return `https://tuwel.tuwien.ac.at/mod/opencast/view.php?id=${id}&e=${e}`;
 }
 
+function replaceStarsInMath(text) {
+  return text.replace(/\$(.*?)\$/gs, (match, inner) => {
+    const replaced = inner.replace(/\*/g, '\\ast');
+    return `$${replaced}$`;
+  });
+}
+
+
 async function get_db_gist() {
     let response = await fetch(GIST_URL, {
         headers: {
@@ -149,6 +157,7 @@ function selectPost(title) {
 
   const sectionsHtml = entries.map(([key, content]) => {
     content = content.replace(/\{ts\}([\d:.]+)\{\/ts\}/g, "");
+    content = replaceStarsInMath(content);
     content = marked.parse(content);
     let firstLine = content.split("\n")[0];
     content = content.replace(firstLine, `<a href=${constructOpencastURL(title, key)}>${firstLine}</a>`);
