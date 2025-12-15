@@ -351,12 +351,6 @@ article h2.post-title {
   margin: 2rem 0;
 }
 
-mjx-container {
-  display: block;
-  overflow-x: auto;
-  overflow-y: hidden;
-  max-width: 100%;
-}
 
 /* Mobile */
 @media (max-width: 768px) {

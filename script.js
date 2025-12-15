@@ -18,6 +18,9 @@ window.MathJax = {
     },
     startup: {
         typeset: false   // we will call typeset manually
+    },
+    output: {
+      displayOverflow: "scroll"
     }
 };
 
