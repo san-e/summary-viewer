@@ -6,7 +6,7 @@ let expanded = new Set();
 const idsToNames = {
   2657588: "Grundzüge digitaler Systeme",
   2658050: "Einführung in die Programmierung 1",
-  2673357: "Algebra und diskrete Mathematik",
+  2673357: "Algebra und Diskrete Mathematik",
   2761974: "Denkweisen der Informatik",
   2765061: "Mathematisches Arbeiten"
 }
