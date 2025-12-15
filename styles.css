@@ -22,6 +22,22 @@
   --font-body: 'Source Sans 3', system-ui, sans-serif;
 }
 
+
+/* The side navigation menu */
+.sidenav {
+  height: 100%; /* 100% Full-height */
+  width: 0; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  right: 0;
+  background-color: var(--background);
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px; /* Place content 60px from the top */
+  transition: 0.3s ease-out; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+
 * {
   margin: 0;
   padding: 0;
@@ -110,6 +126,7 @@ aside li {
   align-items: center;
   gap: 0.5rem;
   transition: all 0.15s ease;
+  overflow: hidden; 
 }
 
 .post-btn:hover {
@@ -342,6 +359,10 @@ article h2.post-title {
 
   .container {
     flex-direction: column;
+  }
+
+  .hamburgerButton {
+    display: block !important;
   }
 
   main {

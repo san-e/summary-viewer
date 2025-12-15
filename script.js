@@ -66,11 +66,20 @@ async function init() {
   }
 }
 
+function fuckMobileHonestly() {
+  document.getElementById("mySidenav").style.top = `${document.querySelector('header').offsetHeight}px`;
+  if (document.getElementById("mySidenav").style.width == "0px") {
+    document.getElementById("mySidenav").style.width = "280px";
+  } else {
+    document.getElementById("mySidenav").style.width = "0px";
+  }
+}
+
 // Render the navigation sidebar
 function renderNav() {
   const titles = Object.keys(data);
   
-  document.getElementById('nav').innerHTML = titles.map((title) => {
+  let navContent = titles.map((title) => {
     const subs = Object.keys(data[title]);
     const isExpanded = expanded.has(title);
     const isActive = selected === title;
@@ -108,6 +117,9 @@ function renderNav() {
       </li>
     `;
   }).join('');
+
+  document.getElementById('nav').innerHTML = navContent;
+  document.getElementById('mySidenav').innerHTML = navContent;
 }
 
 // Handle clicking on a post title
