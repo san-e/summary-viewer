@@ -115,6 +115,8 @@ function handlePostClick(title) {
   document.cookie = title;
   if (expanded.has(title)) {
     expanded.delete(title);
+    renderNav();
+    return;
   } else {
     expanded.clear();
     expanded.add(title);
