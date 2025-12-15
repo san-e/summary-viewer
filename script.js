@@ -24,6 +24,10 @@ window.MathJax = {
 // Generate URL-safe ID from string
 const toId = (str) => str.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
 
+function constructOpencastURL(id, e) {
+  return `https://tuwel.tuwien.ac.at/mod/opencast/view.php?id=${id}&e=${e}`;
+}
+
 async function get_db_gist() {
     let response = await fetch(GIST_URL, {
         headers: {
@@ -129,11 +133,16 @@ function selectPost(title) {
     ? `<p class="section-count">${entries.length} sections</p>` 
     : '';
 
-  const sectionsHtml = entries.map(([key, content]) => `
-    <div class="section" id="${toId(key)}">
-      <div class="prose">${marked.parse(content).replace(/\{ts\}([\d:.]+)\{\/ts\}/g, "")}</div>
-    </div>
-  `).join('');
+  const sectionsHtml = entries.map(([key, content]) => {
+    content = content.replace(/\{ts\}([\d:.]+)\{\/ts\}/g, "");
+    content = marked.parse(content);
+    let firstLine = content.split("\n")[0];
+    content = content.replace(firstLine, `<a href=${constructOpencastURL(title, key)}>${firstLine}</a>`);
+    return `<div class="section" id="${toId(key)}">
+      <div class="prose">${content}</div>
+    </div>`
+  }
+  ).join('');
 
   document.getElementById('article').innerHTML = `
     <div class="fade-in">
