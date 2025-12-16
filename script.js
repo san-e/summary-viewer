@@ -31,11 +31,22 @@ function constructOpencastURL(id, e) {
   return `https://tuwel.tuwien.ac.at/mod/opencast/view.php?id=${id}&e=${e}`;
 }
 
-function replaceStarsInMath(text) {
-  return text.replace(/\$(.*?)\$/gs, (match, inner) => {
-    const replaced = inner.replace(/\*/g, '\\ast');
-    return `$${replaced}$`;
+function escapeLatex(markdown) {
+  // Helper function to escape special characters
+  const escapeChars = (str) =>
+    str.replace(/[\\"'$`]/g, '\\$&'); // escape \ " ' $ `
+
+  // Match $$...$$ first (block math)
+  markdown = markdown.replace(/\$\$([\s\S]+?)\$\$/g, (_, content) => {
+    return `$$${escapeChars(content)}$$`;
   });
+
+  // Match $...$ (inline math), but not $$...$$
+  markdown = markdown.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_, content) => {
+    return `$${escapeChars(content)}$`;
+  });
+
+  return markdown;
 }
 
 
@@ -160,7 +171,7 @@ function selectPost(title) {
 
   const sectionsHtml = entries.map(([key, content]) => {
     content = content.replace(/\{ts\}([\d:.]+)\{\/ts\}/g, "");
-    content = replaceStarsInMath(content);
+    content = escapeLatex(content);
     content = marked.parse(content);
     let firstLine = content.split("\n")[0];
     content = content.replace(firstLine, `<a href=${constructOpencastURL(title, key)}>${firstLine}</a>`);
