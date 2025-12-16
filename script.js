@@ -47,7 +47,7 @@ async function get_db_gist() {
         }
     });
     let text = await response.json();
-    return new TextDecoder().decode(base64ToBytes(text["files"]["summary_db.json"]["content"]));
+    return LZString.decompressFromEncodedURIComponent(text["files"]["summary_db.json"]["content"]);
 }
 
 function base64ToBytes(base64) {
