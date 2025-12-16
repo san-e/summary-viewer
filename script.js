@@ -32,18 +32,18 @@ function constructOpencastURL(id, e) {
 }
 
 function escapeLatex(markdown) {
-  // Helper function to escape special characters
-  const escapeChars = (str) =>
-    str.replace(/[\\"'$`]/g, '\\$&'); // escape \ " ' $ `
+  // Escape every character by prefixing with backslash
+  const escapeAllChars = (str) =>
+    str.replace(/[\s\S]/g, (ch) => `\\${ch}`);
 
-  // Match $$...$$ first (block math)
+  // Handle block math first: $$...$$
   markdown = markdown.replace(/\$\$([\s\S]+?)\$\$/g, (_, content) => {
-    return `$$${escapeChars(content)}$$`;
+    return `$$${escapeAllChars(content)}$$`;
   });
 
-  // Match $...$ (inline math), but not $$...$$
+  // Handle inline math: $...$ (excluding $$)
   markdown = markdown.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_, content) => {
-    return `$${escapeChars(content)}$`;
+    return `$${escapeAllChars(content)}$`;
   });
 
   return markdown;
