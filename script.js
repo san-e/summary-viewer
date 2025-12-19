@@ -134,7 +134,7 @@ function fuckMobileHonestly() {
 }
 
 async function invalidateCache() {
-  const tx = db.transaction('pages', 'readwrite');
+  const tx = cache_db.transaction('pages', 'readwrite');
   await tx.objectStore('pages').clear();
 }
 
