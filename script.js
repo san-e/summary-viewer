@@ -224,7 +224,7 @@ async function selectPost(title) {
   }
 
   invalidateCache();
-  const post = data[title];
+  const post = data[title] || {};
   const entries = Object.entries(post);
 
   const sectionCountHtml =
