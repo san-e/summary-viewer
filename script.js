@@ -103,8 +103,11 @@ async function get_db_gist() {
 // Initialize the app
 async function init() {
   try {
-    data = JSON.parse(await get_db_gist(GIST_URL));
     cache_db = await getDB();
+    if (document.cookie) {
+      selectPost(document.cookie);
+    }
+    data = JSON.parse(await get_db_gist(GIST_URL));
 
     const titles = Object.keys(data);
     if (titles.length) {
@@ -144,12 +147,13 @@ async function cacheHTML(id, html) {
 }
 
 // Render the navigation sidebar
-function renderNav() {
-  const titles = Object.keys(data);
+async function renderNav() {
+  let cached_gist = await getPage("cached_gist");
+  let titles = Object.keys(data || cached_gist);
 
   let navContent = titles
     .map((title) => {
-      const subs = Object.keys(data[title]);
+      const subs = Object.keys(data?.title || cached_gist[title]);
       const isExpanded = expanded.has(title);
       const isActive = selected === title;
 
@@ -169,7 +173,7 @@ function renderNav() {
               onclick="scrollToSection('${escapeQuotes(title)}', '${toId(sub)}')"
               title="${escapeHtml(sub)}"
             >
-              ${i + 1}. ${escapeHtml(data[title][sub].split("\n")[0].replace("#", "") || sub.slice(0, 24))}
+              ${i + 1}. ${escapeHtml((data[title][sub] || cached_gist[title][sub]).split("\n")[0].replace("#", "") || sub.slice(0, 24))}
             </button>
           </li>
         `,
@@ -216,7 +220,8 @@ function handlePostClick(title) {
 // Select and display a post
 async function selectPost(title) {
   selected = title;
-  if(JSON.stringify(data) === await getPage("cached_gist") && await getPage(title) != undefined) {
+  if((JSON.stringify(data) === await getPage("cached_gist") || data === null) &&
+      await getPage(title) != undefined) {
     console.log("cache hit! " + title);
     document.getElementById("article").innerHTML = JSON.parse(await getPage(title));
     renderNav();
