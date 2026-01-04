@@ -155,7 +155,7 @@ async function renderNav() {
     .map((title) => {
       let subs;
       if (data) {
-        subs = Object.keys(data.title);
+        subs = Object.keys(data?.title);
       } else if (Object.keys(cached_gist).contains(title)) {
         subs = cached_gist[title];
       }
