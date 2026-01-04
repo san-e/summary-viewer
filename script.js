@@ -153,7 +153,12 @@ async function renderNav() {
 
   let navContent = titles
     .map((title) => {
-      const subs = Object.keys(data?.title || cached_gist[title]);
+      let subs;
+      if (data) {
+        subs = Object.keys(data.title);
+      } else if (Object.keys(cached_gist).contains(title)) {
+        subs = cached_gist[title];
+      }
       const isExpanded = expanded.has(title);
       const isActive = selected === title;
 
