@@ -156,7 +156,7 @@ async function renderNav() {
       let subs;
       if (data) {
         subs = Object.keys(data[title]);
-      } else if (Object.keys(cached_gist).contains(title)) {
+      } else if (Object.keys(cached_gist).includes(title)) {
         subs = cached_gist[title];
       }
       const isExpanded = expanded.has(title);
