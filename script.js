@@ -11,6 +11,9 @@ const idsToNames = {
   2673357: "Algebra und Diskrete Mathematik",
   2761974: "Denkweisen der Informatik",
   2765061: "Mathematisches Arbeiten",
+  2853588: "Analysis",
+  2871618: "Einführung in die Programmierung 2",
+  2838909: "Algorithmen und Datenstrukturen"
 };
 
 // Generate URL-safe ID from string
