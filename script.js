@@ -3,7 +3,7 @@ const GIST_URL =
 
 let data = null;
 let selected = null;
-let cache_db = null;
+
 let expanded = new Set();
 const idsToNames = {
   2657588: "Grundzüge digitaler Systeme",
@@ -19,53 +19,6 @@ const toId = (str) => str.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
 function constructOpencastURL(id, e) {
   return `https://tuwel.tuwien.ac.at/mod/opencast/view.php?id=${id}&e=${e}`;
 }
-
-let dbPromise;
-
-function getDB() {
-  if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
-      const req = indexedDB.open('cache-db', 1);
-
-      req.onupgradeneeded = e => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('pages')) {
-          db.createObjectStore('pages');
-        }
-      };
-
-      req.onsuccess = e => resolve(e.target.result);
-      req.onerror = () => reject(req.error);
-    });
-  }
-
-  return dbPromise;
-}
-
-function putPage(key, html) {
-  return new Promise((resolve, reject) => {
-    const tx = cache_db.transaction('pages', 'readwrite');
-    const store = tx.objectStore('pages');
-
-    store.put(html, key);
-
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-function getPage(key) {
-  return new Promise((resolve, reject) => {
-    const tx = cache_db.transaction('pages', 'readonly');
-    const store = tx.objectStore('pages');
-
-    const request = store.get(key);
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
 
 
 function escapeLatex(markdown) {
@@ -103,7 +56,6 @@ async function get_db_gist() {
 // Initialize the app
 async function init() {
   try {
-    cache_db = await getDB();
     if (document.cookie) {
       selectPost(document.cookie);
     }
@@ -136,29 +88,15 @@ function fuckMobileHonestly() {
   }
 }
 
-async function invalidateCache() {
-  const tx = cache_db.transaction('pages', 'readwrite');
-  await tx.objectStore('pages').clear();
-}
-
-async function cacheHTML(id, html) {
-  await putPage("cached_gist", JSON.stringify(data));
-  await putPage(id, JSON.stringify(html));
-}
 
 // Render the navigation sidebar
 async function renderNav() {
-  let cached_gist = await getPage("cached_gist");
-  let titles = Object.keys(data || cached_gist);
+  let titles = Object.keys(data);
 
   let navContent = titles
     .map((title) => {
       let subs;
-      if (data) {
-        subs = Object.keys(data[title]);
-      } else if (Object.keys(cached_gist).includes(title)) {
-        subs = cached_gist[title];
-      }
+      subs = Object.keys(data[title]);
       const isExpanded = expanded.has(title);
       const isActive = selected === title;
 
@@ -178,7 +116,7 @@ async function renderNav() {
               onclick="scrollToSection('${escapeQuotes(title)}', '${toId(sub)}')"
               title="${escapeHtml(sub)}"
             >
-              ${i + 1}. ${escapeHtml((data[title][sub] || cached_gist[title][sub]).split("\n")[0].replace("#", "") || sub.slice(0, 24))}
+              ${i + 1}. ${escapeHtml((data[title][sub].split("\n")[0].replace("#", "") || sub.slice(0, 24)))}
             </button>
           </li>
         `,
@@ -225,15 +163,8 @@ function handlePostClick(title) {
 // Select and display a post
 async function selectPost(title) {
   selected = title;
-  if((JSON.stringify(data) === await getPage("cached_gist") || data === null) &&
-      await getPage(title) != undefined) {
-    console.log("cache hit! " + title);
-    document.getElementById("article").innerHTML = JSON.parse(await getPage(title));
-    renderNav();
-    return;
-  }
 
-  invalidateCache();
+
   const post = data[title] || {};
   const entries = Object.entries(post);
 
@@ -278,7 +209,6 @@ async function selectPost(title) {
     throwOnError: false,
   });
   renderNav();
-  cacheHTML(title, document.getElementById("article").innerHTML);
 }
 
 // Scroll to a specific section
